@@ -1,11 +1,21 @@
+/**
+ * @file     client.c
+ * @author   whz
+ * @brief    客户端主程序
+ */
+
 #include <stdio.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-const char *SERVER_IP = "114.212.191.33";
-const unsigned short SERVER_PORT = 4321;
+#include "client/config.h"
 
+/**
+ * @brief  客户端程序主体
+ *
+ * 负责创建连接，并执行交互循环。
+ */
 int main(void)
 {
     struct sockaddr_in client_address = {};
@@ -16,10 +26,10 @@ int main(void)
     int client_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (client_socket_fd == -1) {
-        perror("Failed to create socket for client");
+        perror(MSG_SOCKET_FAILURE);
     }
 
     if (connect(client_socket_fd, (struct sockaddr *)&client_address, sizeof(client_address))) {
-        perror("Failed to connect to server");
+        perror(MSG_CONNECT_FAILURE);
     }
 }
