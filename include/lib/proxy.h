@@ -1,13 +1,23 @@
 /**
  * @file     proxy.h
  * @author   whz
- * @brief    此头文件包含协议的结构体定义
+ * @brief    此头文件包含协议的结构体定义以及相关 API
  */
 
 #ifndef PROXY_H
 #define PROXY_H
 
 #include <inttypes.h>
+
+#define REQUEST_CITY          0x0101
+#define REQUEST_SINGLE_DAY    0x0201
+#define REQUEST_MULTIPLE_DAY  0x0202
+
+#define RESPONSE_CITY_EXISTS  0x0100
+#define RESPONSE_NO_CITY      0x0200
+#define RESPONSE_SINGLE_DAY   0x0341
+#define RESPONSE_MULTIPLE_DAY 0x0342
+#define RESPONSE_NO_DAY       0x0441
 
 /**
  * @brief 客户端请求通用结构
@@ -37,5 +47,7 @@ typedef struct {
 } CityResponseHeader;
 
 CityRequestHeader *construct_request(CityRequestHeader *header, uint16_t type, const char *city_name, uint8_t date);
+
+
 
 #endif // PROXY_H
