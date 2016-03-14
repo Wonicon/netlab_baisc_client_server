@@ -3,6 +3,7 @@ CFLAGS += -std=c11
 CFLAGS += -O0
 CFLAGS += -ggdb3
 CFLAGS += -MMD
+CFLAGS += -I include
 
 CLIENT := client
 
