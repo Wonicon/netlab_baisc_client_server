@@ -36,4 +36,6 @@ typedef struct {
     } status[25];              /**< 状态数组 */
 } CityResponseHeader;
 
+CityRequestHeader *construct_request(CityRequestHeader *header, uint16_t type, const char *city_name, uint8_t date);
+
 #endif // PROXY_H
