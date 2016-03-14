@@ -15,4 +15,6 @@ extern const char *MSG_SOCKET_FAILURE;
 
 extern const char *MSG_CONNECT_FAILURE;
 
+extern const char *MSG_SEND_FAILURE;
+
 #endif /* CLIENT_CONFIG_H */

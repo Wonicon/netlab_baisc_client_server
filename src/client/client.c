@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "lib/proxy.h"
 #include "client/config.h"
 
 /**
@@ -32,4 +33,23 @@ int main(void)
     if (connect(client_socket_fd, (struct sockaddr *)&client_address, sizeof(client_address))) {
         perror(MSG_CONNECT_FAILURE);
     }
+
+    // Just a demo
+
+    CityRequestHeader header;
+    construct_request(&header, 0x0202, "nanjing", 10);
+
+    if (send(client_socket_fd, &header, sizeof(header), 0) == -1) {
+        perror(MSG_SEND_FAILURE);
+    }
+
+    CityResponseHeader response = {};
+    ssize_t n_read = recv(client_socket_fd, &response, sizeof(response), 0);
+    printf("n_read = %ld\n", n_read);
+    printf("type %04x\n", ntohs(response.type));
+    printf("name %s\n", response.city_name);
+    printf("year %d\n", ntohs(response.year));
+    printf("month %d\n", response.month);
+    printf("day %d\n", response.day);
+    printf("n %d\n", response.n_status);
 }

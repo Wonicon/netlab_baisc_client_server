@@ -27,3 +27,8 @@ const char *MSG_SOCKET_FAILURE = "Failed to create socket for client";
  * @brief connect() 调用失败时配合 perror() 使用
  */
 const char *MSG_CONNECT_FAILURE = "Failed to connect to server";
+
+/**
+ * @brief send() / write() 调用失败时配合 perror() 使用
+ */
+const char *MSG_SEND_FAILURE = "Failed to send request";
