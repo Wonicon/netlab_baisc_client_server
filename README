@@ -1,0 +1,2 @@
+编译客户端: make client
+使用客户端: make run-cli
