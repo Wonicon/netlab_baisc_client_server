@@ -48,6 +48,6 @@ typedef struct {
 
 CityRequestHeader *construct_request(CityRequestHeader *header, uint16_t type, const char *city_name, uint8_t date);
 
-
+CityResponseHeader *response_ntoh(CityResponseHeader *header);
 
 #endif // PROXY_H

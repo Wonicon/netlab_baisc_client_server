@@ -36,3 +36,16 @@ construct_request(CityRequestHeader *header, uint16_t type, const char *city_nam
 
     return header;
 }
+
+/**
+ * @brief 转换响应报文中的字节序
+ * @param header 直接接收的，尚未转换字节序的响应报文头指针
+ * @return       转换字节序后的响应报文头，与参数相同。
+ */
+CityResponseHeader *
+response_ntoh(CityResponseHeader *header)
+{
+    header->type = htons(header->type);
+    header->year = htons(header->year);
+    return header;
+}
