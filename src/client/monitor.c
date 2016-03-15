@@ -117,10 +117,10 @@ void monitor_main_loop(int socket_fd)
         fgets(command, sizeof(command), stdin);
 
         // 城市名带上 \n 就不好了
-        // 不过不需要检查 len - 1 的具体内容，因为要么是 \n 要么是 \0
-        // 用 \0 写掉 \n 是目的，另一种情况没有影响。
         size_t len = strlen(command);
-        command[len - 1] = '\0';
+        if (command[len - 1] == '\n') {
+            command[len - 1] = '\0';
+        }
 
         switch (state) {
             case QUERY_CITY:
