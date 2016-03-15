@@ -7,9 +7,11 @@
 #ifndef CLIENT_CONFIG_H
 #define CLIENT_CONFIG_H
 
+#include <stdio.h>
+
 extern const char *SERVER_IP;
 
-extern unsigned short SERVER_PORT;
+extern const unsigned short SERVER_PORT;
 
 extern const char *MSG_SOCKET_FAILURE;
 
