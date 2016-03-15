@@ -36,7 +36,7 @@ request_helper(int socket_fd, uint16_t type, const char *city_name, uint8_t date
 
     ssize_t n_read = recv(socket_fd, response, sizeof(*response), 0);
 
-    if (n_read != sizeof(request)) {
+    if (n_read != sizeof(response)) {
         perror(MSG_SEND_FAILURE);
         return NULL;
     }
