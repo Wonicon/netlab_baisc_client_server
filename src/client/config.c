@@ -87,7 +87,7 @@ const char *NO_CITY_ERROR_MESSAGE(const char *city)
  * @param day   日期
  * @return 格式化之后的信息
  */
-const char *CITY_INFO_FORMA(const char *city, uint16_t year, uint8_t month, uint8_t day)
+const char *CITY_INFO(const char *city, uint16_t year, uint8_t month, uint8_t day)
 {
     static char message[1024];
     snprintf(message, sizeof(message), "City: %s  Today is: %u/%02u/%02u  Weather information is as follows: ",

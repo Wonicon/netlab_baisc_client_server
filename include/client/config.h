@@ -30,7 +30,7 @@ extern const char *INPUT_ERROR;
 
 const char *NO_CITY_ERROR_MESSAGE(const char *city);
 
-const char *CITY_INFO_FORMA(const char *city, uint16_t year, uint8_t month, uint8_t day);
+const char *CITY_INFO(const char *city, uint16_t year, uint8_t month, uint8_t day);
 
 const char *WEATHER_INFO(uint8_t day, const char *weather, int8_t temperature, int today_enable);
 
