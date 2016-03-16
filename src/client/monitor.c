@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <lib/proxy.h>
 
 /**
  * @brief 发送请求辅助函数
@@ -59,11 +60,9 @@ static int query_city_exists(int socket_fd, const char *city_name)
     }
 
     if (response.type == RESPONSE_NO_CITY) {
-        printf("%s doesn't exist\n", city_name);
         return -1;
     }
     else {
-        printf("%s exists\n", city_name);
         return 0;
     }
 }
@@ -83,10 +82,11 @@ typedef enum {
  * @param command   命令内容
  * @return 查询城市成功返回 QUERY_WEATHER, 如果为 # 则返回 EXIT, 其余情况保持 QUERY_CITY 状态
  */
-static MonitorState city_query_handler(int socket_fd, const char *command)
+static MonitorState city_query_handler(int socket_fd, char city_name[], size_t city_name_len, const char *command)
 {
     if (!strcmp(command, "c")) {
         system("clear");
+        puts(GREETING);
         return QUERY_CITY;
     }
     else if (!strcmp(command, "#")) {
@@ -94,12 +94,73 @@ static MonitorState city_query_handler(int socket_fd, const char *command)
     }
     else {
         if (query_city_exists(socket_fd, command) == 0) {
+            system("clear");
+            puts(CITY_HEADER);
+            strncpy(city_name, command, city_name_len);
             return QUERY_WEATHER;
         }
         else {
+            puts(NO_CITY_ERROR_MESSAGE(command));
             return QUERY_CITY;
         }
     }
+}
+
+static MonitorState weather_query_handler(int socket_fd, char city_name[], size_t city_name_len, const char *command)
+{
+    if (!strcmp(command, "c")) {
+        system("clear");
+        puts(CITY_HEADER);
+        return QUERY_WEATHER;
+    }
+
+    if (!strcmp(command, "r")) {
+        system("clear");
+        puts(GREETING);
+        return QUERY_CITY;
+    }
+
+    if (!strcmp(command, "#")) {
+        return EXIT;
+    }
+
+    CityResponseHeader response = {};
+
+    if (!strcmp(command, "1")) {
+        request_helper(socket_fd, REQUEST_SINGLE_DAY, city_name, 1, &response);
+        puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
+        puts(WEATHER_INFO(1, "N/A", response.status[0].temperature, 1));
+        return QUERY_WEATHER;
+    }
+
+    if (!strcmp(command, "2")) {
+        request_helper(socket_fd, REQUEST_MULTIPLE_DAY, city_name, 3, &response);
+        puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
+        for (int i = 0; i < response.n_status; i++) {
+            puts(WEATHER_INFO((uint8_t)i, "N/A", response.status[i].temperature, 0));
+        }
+        return QUERY_WEATHER;
+    }
+
+    if (!strcmp(command, "3")) {
+        printf("%s", REQUEST_CUSTOM_DAY);
+        int no;
+        while (scanf("%d", &no) == 0) {
+            puts(INPUT_ERROR);
+            do {
+                no = getchar();
+            } while (no != '\n' && no != EOF);
+            printf("%s", REQUEST_CUSTOM_DAY);
+        };
+        request_helper(socket_fd, REQUEST_SINGLE_DAY, city_name, (uint8_t)no, &response);
+        puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
+        puts(WEATHER_INFO((uint8_t)no, "N/A", response.status[0].temperature, 1));
+        return QUERY_WEATHER;
+    }
+
+    puts(INPUT_ERROR);
+
+    return QUERY_WEATHER;
 }
 
 /**
@@ -110,6 +171,10 @@ void monitor_main_loop(int socket_fd)
 {
     MonitorState state = QUERY_CITY;
 
+    system("clear");
+    puts(GREETING);
+
+    char city_name[64];
     char command[1024];
 
     while (state != EXIT) {
@@ -118,15 +183,19 @@ void monitor_main_loop(int socket_fd)
 
         // 城市名带上 \n 就不好了
         size_t len = strlen(command);
+        if (len == 1 || len == 0) {  // Avoid \n left in buffer by scanf above.
+            continue;
+        }
         if (command[len - 1] == '\n') {
             command[len - 1] = '\0';
         }
 
         switch (state) {
             case QUERY_CITY:
-                state = city_query_handler(socket_fd, command);
+                state = city_query_handler(socket_fd, city_name, sizeof(city_name), command);
                 break;
             case QUERY_WEATHER:
+                state = weather_query_handler(socket_fd, city_name, sizeof(city_name), command);
                 break;
             default:
                 state = EXIT;
