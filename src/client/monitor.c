@@ -8,10 +8,8 @@
 #include "client/config.h"
 #include "lib/proxy.h"
 #include <sys/socket.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <lib/proxy.h>
 
 /**
  * @brief 发送请求辅助函数
@@ -79,6 +77,8 @@ typedef enum {
 /**
  * @brief 根据请求结果进行响应处理以及状态转移
  * @param socket_fd 客户端套接字
+ * @param city_name 城市名
+ * @param city_name_len 城市名字符数组长度
  * @param command   命令内容
  * @return 查询城市成功返回 QUERY_WEATHER, 如果为 # 则返回 EXIT, 其余情况保持 QUERY_CITY 状态
  */
@@ -89,23 +89,31 @@ static MonitorState city_query_handler(int socket_fd, char city_name[], size_t c
         puts(GREETING);
         return QUERY_CITY;
     }
-    else if (!strcmp(command, "#")) {
+
+    if (!strcmp(command, "#")) {
         return EXIT;
     }
-    else {
-        if (query_city_exists(socket_fd, command) == 0) {
-            system("clear");
-            puts(CITY_HEADER);
-            strncpy(city_name, command, city_name_len);
-            return QUERY_WEATHER;
-        }
-        else {
-            puts(NO_CITY_ERROR_MESSAGE(command));
-            return QUERY_CITY;
-        }
+
+    if (query_city_exists(socket_fd, command) == 0) {
+        system("clear");
+        puts(CITY_HEADER);
+        strncpy(city_name, command, city_name_len);
+        return QUERY_WEATHER;
     }
+
+    puts(NO_CITY_ERROR_MESSAGE(command));
+    
+    return QUERY_CITY;
 }
 
+/**
+ * @brief 处理具体天气查询
+ * @param socket_fd 客户端套接字
+ * @param city_name 城市名
+ * @param city_name_len 城市名字符数组长度
+ * @param command   命令内容
+ * @return 根据输入返回具体的下一状态
+ */
 static MonitorState weather_query_handler(int socket_fd, char city_name[], size_t city_name_len, const char *command)
 {
     if (!strcmp(command, "c")) {
@@ -137,7 +145,7 @@ static MonitorState weather_query_handler(int socket_fd, char city_name[], size_
         request_helper(socket_fd, REQUEST_MULTIPLE_DAY, city_name, 3, &response);
         puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
         for (int i = 0; i < response.n_status; i++) {
-            puts(WEATHER_INFO((uint8_t)i, "N/A", response.status[i].temperature, 0));
+            puts(WEATHER_INFO((uint8_t)(i + 1), "N/A", response.status[i].temperature, 0));
         }
         return QUERY_WEATHER;
     }
@@ -145,8 +153,10 @@ static MonitorState weather_query_handler(int socket_fd, char city_name[], size_
     if (!strcmp(command, "3")) {
         printf("%s", REQUEST_CUSTOM_DAY);
         int no;
+        // 进行错误处理，如果不把输入缓冲区清空，则无法继续使用 scanf
         while (scanf("%d", &no) == 0) {
             puts(INPUT_ERROR);
+            // 清空输入缓冲区
             do {
                 no = getchar();
             } while (no != '\n' && no != EOF);
