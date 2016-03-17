@@ -5,6 +5,7 @@
  */
 
 #include "client/config.h"
+#include "lib/proxy.h"
 
 /**
  * @brief 服务器的 IP
@@ -95,15 +96,43 @@ const char *CITY_INFO(const char *city, uint16_t year, uint8_t month, uint8_t da
     return message;
 }
 
+
+/**
+ * @breif weather_type 对应的文本信息
+ */
+static const char *weather_type_literals[] = {
+    [WEATHER_SHOWER] = "shower",
+    [WEATHER_CLEAR]  = "clear" ,
+    [WEATHER_CLOUDY] = "cloudy",
+    [WEATHER_RAIN]   = "rain"  ,
+    [WEATHER_FOG]    = "fog"   ,
+};
+
+/**
+ * @brief 将 weather_type 数值字段转换成对应的字符串，可重入
+ * @param weather_type 从报文中获取的
+ * @return 返回 weather_type 对应的字符串，如果值异常，返回 NULL。
+ */
+static const char *weather_to_string(uint8_t weather_type)
+{
+    if (weather_type >= sizeof(weather_type_literals)) {
+        fprintf(stderr, "weather_type %d exceeds the limit, which is %lu\n",
+                weather_type, sizeof(weather_type_literals));
+        return "N/A";
+    }
+
+    return weather_type_literals[weather_type];
+}
+
 /**
  * @brief 天气信息，此函数不可并发重入
  * @param day          日期序号
- * @param weather      天气 TODO 枚举天气
+ * @param weather      天气
  * @param temperature  气温
  * @param today_enable 是否允许将 day == 1 打印成 Today
  * @return 格式化之后的信息
  */
-const char *WEATHER_INFO(uint8_t day, const char *weather, int8_t temperature, int today_enable)
+const char *WEATHER_INFO(uint8_t day, uint8_t weather, int8_t temperature, int today_enable)
 {
     static char day_text[256];
     if (today_enable && day == 1) {
@@ -114,6 +143,7 @@ const char *WEATHER_INFO(uint8_t day, const char *weather, int8_t temperature, i
     }
 
     static char message[1024];
-    snprintf(message, sizeof(message), "%s's Weather is: %s;  Temp:%d", day_text, weather, temperature);
+    snprintf(message, sizeof(message), "%s's Weather is: %s;  Temp:%d",
+            day_text, weather_to_string(weather), temperature);
     return message;
 }

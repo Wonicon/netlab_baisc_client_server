@@ -32,6 +32,6 @@ const char *NO_CITY_ERROR_MESSAGE(const char *city);
 
 const char *CITY_INFO(const char *city, uint16_t year, uint8_t month, uint8_t day);
 
-const char *WEATHER_INFO(uint8_t day, const char *weather, int8_t temperature, int today_enable);
+const char *WEATHER_INFO(uint8_t day, uint8_t weather, int8_t temperature, int today_enable);
 
 #endif /* CLIENT_CONFIG_H */

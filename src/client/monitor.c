@@ -137,7 +137,7 @@ static MonitorState weather_query_handler(int socket_fd, char city_name[], size_
     if (!strcmp(command, "1")) {
         request_helper(socket_fd, REQUEST_SINGLE_DAY, city_name, 1, &response);
         puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
-        puts(WEATHER_INFO(1, "N/A", response.status[0].temperature, 1));
+        puts(WEATHER_INFO(1, response.status[0].weather_type, response.status[0].temperature, 1));
         return QUERY_WEATHER;
     }
 
@@ -145,7 +145,7 @@ static MonitorState weather_query_handler(int socket_fd, char city_name[], size_
         request_helper(socket_fd, REQUEST_MULTIPLE_DAY, city_name, 3, &response);
         puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
         for (int i = 0; i < response.n_status; i++) {
-            puts(WEATHER_INFO((uint8_t)(i + 1), "N/A", response.status[i].temperature, 0));
+            puts(WEATHER_INFO((uint8_t)(i + 1), response.status[i].weather_type, response.status[i].temperature, 0));
         }
         return QUERY_WEATHER;
     }
@@ -164,7 +164,7 @@ static MonitorState weather_query_handler(int socket_fd, char city_name[], size_
         };
         request_helper(socket_fd, REQUEST_SINGLE_DAY, city_name, (uint8_t)no, &response);
         puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
-        puts(WEATHER_INFO((uint8_t)no, "N/A", response.status[0].temperature, 1));
+        puts(WEATHER_INFO((uint8_t)no, response.status[0].weather_type, response.status[0].temperature, 1));
         return QUERY_WEATHER;
     }
 

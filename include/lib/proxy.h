@@ -46,6 +46,19 @@ typedef struct {
     } status[25];              /**< 状态数组 */
 } CityResponseHeader;
 
+/**
+ * @brief weather_type 的值对应的枚举值
+ *
+ * 将 weather_type 的值语义化
+ */
+typedef enum {
+    WEATHER_SHOWER,
+    WEATHER_CLEAR,
+    WEATHER_CLOUDY,
+    WEATHER_RAIN,
+    WEATHER_FOG,
+} WeatherType;
+
 CityRequestHeader *construct_request(CityRequestHeader *header, uint16_t type, const char *city_name, uint8_t date);
 
 CityResponseHeader *response_ntoh(CityResponseHeader *header);
