@@ -29,8 +29,10 @@ int main(int argc, char *argv[])
 
     int listen_socket = init_server((uint16_t)port_no);
 
+    int count = 0;
     for(;;) {
         Connection *link = malloc(sizeof(Connection));
+        link->id = count++;
         link->socket_fd = accept(listen_socket, (struct sockaddr *)&link->address, &link->length);
         pthread_create(&link->tid, NULL, weather_service_main_loop, link);
     }

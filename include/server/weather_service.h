@@ -14,6 +14,7 @@
  * @brief 描述连接状态
  */
 typedef struct {
+    int                 id;         /**< 连接编号 */
     pthread_t           tid;        /**< 服务线程 ID */
     int                 socket_fd;  /**< 连接套接字 */
     struct sockaddr_in  address;    /**< 客户端 IP 地址 */
