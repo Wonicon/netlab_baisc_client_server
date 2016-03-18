@@ -40,10 +40,12 @@ int main(int argc, char *argv[])
 
     if (client_socket_fd == -1) {
         perror(MSG_SOCKET_FAILURE);
+        exit(-1);
     }
 
     if (connect(client_socket_fd, (struct sockaddr *)&client_address, sizeof(client_address))) {
         perror(MSG_CONNECT_FAILURE);
+        exit(-1);
     }
 
     monitor_main_loop(client_socket_fd);
