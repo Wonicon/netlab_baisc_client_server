@@ -6,20 +6,29 @@ CFLAGS += -MMD
 CFLAGS += -I include
 
 CLIENT := client
+SERVER := server
 LIB    := lib
 
 TEMP := build
 
-CLIENT_SRC := $(shell find src/$(CLIENT) * -type f -name "*.c")
+CLIENT_SRC := $(shell find src/$(CLIENT)/* -type f -name "*.c")
 CLIENT_OBJ := $(CLIENT_SRC:%.c=$(TEMP)/%.o)
 CLIENT_DEP := $(CLIENT_SRC:%.c=$(TEMP)/%.d)
 
-LIB_SRC := $(shell find src/$(LIB) * -type f -name "*.c")
+SERVER_SRC := $(shell find src/$(SERVER)/* -type f -name "*.c")
+SERVER_OBJ := $(SERVER_SRC:%.c=$(TEMP)/%.o)
+SERVER_DEP := $(SERVER_SRC:%.c=$(TEMP)/%.d)
+
+LIB_SRC := $(shell find src/$(LIB)/* -type f -name "*.c")
 LIB_OBJ := $(LIB_SRC:%.c=$(TEMP)/%.o)
 LIB_DEP := $(LIB_SRC:%.c=$(TEMP)/%.d)
 
-$(CLIENT): $(CLIENT_OBJ)
+$(CLIENT): $(CLIENT_OBJ) $(LIB_OBJ)
 	@$(CC) $^ -o $@
+	@echo +ld $^
+
+$(SERVER): $(SERVER_OBJ) $(LIB_OBJ)
+	@$(CC) $^ -lpthread -o $@
 	@echo +ld $^
 
 $(TEMP)/%.o: %.c
@@ -28,6 +37,8 @@ $(TEMP)/%.o: %.c
 	@echo +cc $<
 
 -include $(CLIENT_DEP)
+
+-include $(SERVER_DEP)
 
 -include $(LIB_DEP)
 
@@ -38,4 +49,7 @@ clean:
 	-@rm $(CLIENT) 2> /dev/null
 
 run-cli: $(CLIENT)
+	@./$<
+
+run-server: $(SERVER)
 	@./$<
