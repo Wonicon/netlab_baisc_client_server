@@ -48,7 +48,7 @@ construct_request(CityRequestHeader *header, uint16_t type, const char *city_nam
  * 类型可以配合初始化在构造之前设定。
  */
 CityResponseHeader *
-construct_reponse(CityResponseHeader *response, CityRequestHeader *request)
+construct_response(CityResponseHeader *response, CityRequestHeader *request)
 {
     strncpy(response->city_name, request->city_name, sizeof(response->city_name) - 1);
     response->n_status = request->date;

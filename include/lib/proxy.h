@@ -43,7 +43,7 @@ typedef struct {
     uint8_t   n_status;        /**< 包含的状态数，决定 #status 数据有效元素的个数 */
     struct {
         uint8_t weather_type;  /**< 天气类型 */
-        uint8_t temperature;   /**< 温度 */
+        int8_t temperature;    /**< 温度 */
     } status[25];              /**< 状态数组 */
 } CityResponseHeader;
 #pragma pack(pop)
@@ -59,6 +59,7 @@ typedef enum {
     WEATHER_CLOUDY,
     WEATHER_RAIN,
     WEATHER_FOG,
+    NR_WEATHER
 } WeatherType;
 
 CityRequestHeader *construct_request(CityRequestHeader *header, uint16_t type, const char *city_name, uint8_t date);
@@ -66,7 +67,7 @@ CityRequestHeader *construct_request(CityRequestHeader *header, uint16_t type, c
 /*
  * 根据请求设定响应报文，自动获取时间。
  */
-CityResponseHeader *construct_reponse(CityResponseHeader *response, CityRequestHeader *request);
+CityResponseHeader *construct_response(CityResponseHeader *response, CityRequestHeader *request);
 
 /*
  * 将请求报文从网络字节序转换成主机字节序

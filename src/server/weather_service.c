@@ -68,8 +68,19 @@ void *weather_service_main_loop(void *arg)
                 response.type = (uint16_t)(query_city(request.city_name) ? RESPONSE_CITY_EXISTS : RESPONSE_NO_CITY);
                 break;
             case REQUEST_SINGLE_DAY:
+                response.type = REQUEST_SINGLE_DAY;
+                response.status[0].weather_type = (uint8_t)(((unsigned)rand()) % NR_WEATHER);
+                response.status[0].temperature = (int8_t)rand();
                 break;
             case REQUEST_MULTIPLE_DAY:
+                response.type = RESPONSE_MULTIPLE_DAY;
+                for (uint8_t i = 0; i < request.date; i++) {
+                    if (i >= sizeof(response.status) / sizeof(response.status[0])) {
+                        break;
+                    }
+                    response.status[i].weather_type = (uint8_t)(((unsigned)rand()) % NR_WEATHER);
+                    response.status[i].temperature = (int8_t)rand();
+                }
                 break;
             default:
                 fprintf(stderr, "%d: unrecognized request type %x\n", link->id, request.type);
@@ -78,7 +89,7 @@ void *weather_service_main_loop(void *arg)
         }
 
         // 构造通用部分，转换字节序，发送
-        construct_reponse(&response, &request);
+        construct_response(&response, &request);
         response_hton(&response);
         ssize_t n_send = send(link->socket_fd, &response, sizeof(response), 0);
         if (n_send != sizeof(response)) {
