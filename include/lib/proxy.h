@@ -22,17 +22,18 @@
 /**
  * @brief 客户端请求通用结构
  */
-#pragma pack(1)
+#pragma pack(push, 1)
 typedef struct {
     uint16_t  type;            /**< 请求类型 */
     char      city_name[20];   /**< 城市名称，含终结符 */
     uint8_t   date;            /**< 日期距离，1 = 今天，2 = 昨天，依次类推 */
 } CityRequestHeader;
+#pragma pack(pop)
 
 /**
  * @brief 服务器响应通用结构
  */
-#pragma pack(1)
+#pragma pack(push, 1)
 typedef struct {
     uint16_t  type;            /**< 响应类型 */
     char      city_name[20];   /**< 城市名称，含终结符 */
@@ -45,6 +46,7 @@ typedef struct {
         uint8_t temperature;   /**< 温度 */
     } status[25];              /**< 状态数组 */
 } CityResponseHeader;
+#pragma pack(pop)
 
 /**
  * @brief weather_type 的值对应的枚举值
