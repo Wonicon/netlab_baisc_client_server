@@ -1,2 +1,10 @@
-编译客户端: make client
-使用客户端: make run-cli
+编译客户端: make client 在项目根目录下生成 client 程序
+
+执行客户端: ./client 用于测试与官方服务器的交互
+            ./client <ip-address> <port> 用于测试自己实现的服务器
+
+编译服务端: make server 在项目根目录下生成 server 程序
+
+执行服务端: ./server <port> 在系统默认的 IP 地址下侦听端口 <port>
+
+编译标准为 gnu11, 使用 POSIX 扩展的线程安全的日期函数 localtime_r, 使用 phtread 库.

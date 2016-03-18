@@ -46,10 +46,5 @@ $(TEMP)/%.o: %.c
 
 clean:
 	-@rm -rf $(TEMP) 2> /dev/null
-	-@rm $(CLIENT) 2> /dev/null
-
-run-cli: $(CLIENT)
-	@./$<
-
-run-server: $(SERVER)
-	@./$<
+	-@rm -f $(CLIENT) 2> /dev/null
+	-@rm -f $(SERVER) 2> /dev/null
