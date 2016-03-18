@@ -32,7 +32,7 @@ static const char *cities[] = {
 static int query_city(const char *city)
 {
     for (long i = 0; i < sizeof(cities) / sizeof(cities[0]); i++) {
-        if (!strcmp(city, cities[0])) {
+        if (!strcmp(city, cities[i])) {
             return 1;
         }
     }
@@ -59,6 +59,8 @@ void *weather_service_main_loop(void *arg)
             perror("Failed to receive");
             exit(-1);
         }
+
+        request_ntoh(&request);
 
         CityResponseHeader response = {};
         switch (request.type) {
