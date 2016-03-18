@@ -61,6 +61,16 @@ typedef enum {
 
 CityRequestHeader *construct_request(CityRequestHeader *header, uint16_t type, const char *city_name, uint8_t date);
 
+/*
+ * 根据请求设定响应报文，自动获取时间。
+ */
+CityResponseHeader *construct_reponse(CityResponseHeader *response, CityRequestHeader *request);
+
 CityResponseHeader *response_ntoh(CityResponseHeader *header);
+
+/*
+ * 将响应报文中的多字节数值字段由本机字节序转换成网络字节序
+ */
+CityResponseHeader *response_hton(CityResponseHeader *header);
 
 #endif // PROXY_H

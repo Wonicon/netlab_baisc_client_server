@@ -1,5 +1,5 @@
 CFLAGS := -Wall -Werror -Wfatal-errors
-CFLAGS += -std=c11
+CFLAGS += -std=gnu11
 CFLAGS += -O0
 CFLAGS += -ggdb3
 CFLAGS += -MMD
