@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <stdlib.h>
 
 #include "client/config.h"
 #include "client/monitor.h"
@@ -30,8 +31,10 @@ int main(int argc, char *argv[])
 
     struct sockaddr_in client_address = {};
     client_address.sin_family = AF_INET;
-    client_address.sin_addr.s_addr = inet_addr(SERVER_IP);
-    client_address.sin_port = htons(SERVER_PORT);
+    client_address.sin_addr.s_addr =
+        (argc == 3) ? inet_addr(argv[1]) : inet_addr(SERVER_IP);
+    client_address.sin_port =
+        (argc == 3) ? htons((uint16_t)atoi(argv[2])) : htons(SERVER_PORT);
 
     int client_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
