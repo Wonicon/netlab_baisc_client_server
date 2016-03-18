@@ -65,6 +65,18 @@ construct_reponse(CityResponseHeader *response, CityRequestHeader *request)
 }
 
 /**
+ * @brief 将请求报文中的多字节数值字段从网络字节序转换成主机字节序
+ * @param header 指向请求报文的指针
+ * @return       转换后的与参数一样的指针
+ */
+CityRequestHeader *
+request_ntoh(CityRequestHeader *header)
+{
+    header->type = htons(header->type);
+    return header;
+}
+
+/**
  * @brief 转换响应报文中的字节序
  * @param header 直接接收的，尚未转换字节序的响应报文头指针
  * @return       转换字节序后的响应报文头，与参数相同。

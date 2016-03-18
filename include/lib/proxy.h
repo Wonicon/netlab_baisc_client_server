@@ -68,6 +68,11 @@ CityRequestHeader *construct_request(CityRequestHeader *header, uint16_t type, c
  */
 CityResponseHeader *construct_reponse(CityResponseHeader *response, CityRequestHeader *request);
 
+/*
+ * 将请求报文从网络字节序转换成主机字节序
+ */
+CityRequestHeader *request_ntoh(CityRequestHeader *header);
+
 CityResponseHeader *response_ntoh(CityResponseHeader *header);
 
 /*
