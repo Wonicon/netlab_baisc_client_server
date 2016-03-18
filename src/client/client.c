@@ -5,6 +5,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -17,8 +18,16 @@
  *
  * 负责创建连接，并执行交互循环。
  */
-int main(void)
+int main(int argc, char *argv[])
 {
+    if ((argc != 1 && argc != 3) || (argc > 1 && !strcmp(argv[1], "help"))) {
+        int indent;
+        printf("Usage: %n%s                            # connects to official server\n", &indent, argv[0]);
+        printf(      "%*s%s <server-ip> <server-port>  # connects to custom server\n", indent, "", argv[0]);
+        printf(      "%*s%s help                       # show this message\n", indent, "", argv[0]);
+        return 0;
+    }
+
     struct sockaddr_in client_address = {};
     client_address.sin_family = AF_INET;
     client_address.sin_addr.s_addr = inet_addr(SERVER_IP);
