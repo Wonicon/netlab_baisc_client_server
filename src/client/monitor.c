@@ -6,10 +6,10 @@
 
 #include "client/monitor.h"
 #include "client/config.h"
-#include "lib/proxy.h"
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <string.h>
+#include <lib/proxy.h>
 
 /**
  * @brief 控制台状态类型
@@ -111,6 +111,36 @@ static void city_query_handler(Monitor *monitor_ptr)
 }
 
 /**
+ * @brief 打印城市信息的辅助函数
+ * @param response 指向响应报文的指针
+ */
+static void puts_city_info(const CityResponseHeader *response)
+{
+    const char *city = response->city_name;
+    uint16_t year = response->year;
+    uint8_t month = response->month;
+    uint8_t day = response->day;
+    char *city_info = CITY_INFO(city, year, month, day);
+    puts(city_info);
+    free(city_info);
+}
+
+/**
+ * @brief 打印天气信息的辅助函数
+ * @param response 指向响应报文的指针
+ * @param index    打印的天气序号
+ * @param today    是否将第一天打印成 Today
+ */
+static void puts_weather_info(const CityResponseHeader *response, int index, int today)
+{
+    uint8_t type = response->status[index].weather_type;
+    int8_t temp = response->status[index].temperature;
+    char *weather_info = WEATHER_INFO((uint8_t)index, type, temp, today);
+    puts(weather_info);
+    free(weather_info);
+}
+
+/**
  * @brief 处理具体天气查询
  * @param monitor_ptr 控制台对象指针
  */
@@ -133,20 +163,16 @@ static void weather_query_handler(Monitor *monitor_ptr)
     }
     else if (!strcmp(monitor_ptr->command, "1")) {
         request_helper(monitor_ptr->client_socket, REQUEST_SINGLE_DAY, monitor_ptr->city, 1, &response);
-
-        puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
-        puts(WEATHER_INFO(1, response.status[0].weather_type, response.status[0].temperature, 1));
-
+        puts_city_info(&response);
+        puts_weather_info(&response, 0, 1);
         monitor_ptr->state = QUERY_WEATHER;
     }
     else if (!strcmp(monitor_ptr->command, "2")) {
         request_helper(monitor_ptr->client_socket, REQUEST_MULTIPLE_DAY, monitor_ptr->city, 3, &response);
-
-        puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
+        puts_city_info(&response);
         for (int i = 0; i < response.n_status; i++) {
-            puts(WEATHER_INFO((uint8_t)(i + 1), response.status[i].weather_type, response.status[i].temperature, 0));
+            puts_weather_info(&response, i + 1, 0);
         }
-
         monitor_ptr->state = QUERY_WEATHER;
     }
     else if (!strcmp(monitor_ptr->command, "3")) {
@@ -163,10 +189,8 @@ static void weather_query_handler(Monitor *monitor_ptr)
         };
 
         request_helper(monitor_ptr->client_socket, REQUEST_SINGLE_DAY, monitor_ptr->city, (uint8_t)no, &response);
-
-        puts(CITY_INFO(response.city_name, response.year, response.month, response.day));
-        puts(WEATHER_INFO((uint8_t)no, response.status[0].weather_type, response.status[0].temperature, 1));
-
+        puts_city_info(&response);
+        puts_weather_info(&response, response.n_status, 1);
         monitor_ptr->state = QUERY_WEATHER;
     }
     else {

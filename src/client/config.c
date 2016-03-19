@@ -4,6 +4,7 @@
  * @brief    这个文件存放客户端使用到的相关的常量
  */
 
+#include <stdlib.h>
 #include "client/config.h"
 #include "lib/proxy.h"
 
@@ -88,10 +89,11 @@ const char *NO_CITY_ERROR_MESSAGE(const char *city)
  * @param day   日期
  * @return 格式化之后的信息
  */
-const char *CITY_INFO(const char *city, uint16_t year, uint8_t month, uint8_t day)
+char *CITY_INFO(const char *city, uint16_t year, uint8_t month, uint8_t day)
 {
-    static char message[1024];
-    snprintf(message, sizeof(message), "City: %s  Today is: %u/%02u/%02u  Weather information is as follows: ",
+    size_t size = 1024;
+    char *message = malloc(size);
+    snprintf(message, size, "City: %s  Today is: %u/%02u/%02u  Weather information is as follows: ",
              city, year, month, day);
     return message;
 }
@@ -125,16 +127,16 @@ static const char *weather_to_string(uint8_t weather_type)
 }
 
 /**
- * @brief 天气信息，此函数不可并发重入
+ * @brief 天气信息
  * @param day          日期序号
  * @param weather      天气
  * @param temperature  气温
  * @param today_enable 是否允许将 day == 1 打印成 Today
- * @return 格式化之后的信息
+ * @return 格式化之后的信息，动态申请，由调用者负责释放
  */
-const char *WEATHER_INFO(uint8_t day, uint8_t weather, int8_t temperature, int today_enable)
+char *WEATHER_INFO(uint8_t day, uint8_t weather, int8_t temperature, int today_enable)
 {
-    static char day_text[256];
+    char day_text[256];
     if (today_enable && day == 1) {
         snprintf(day_text, sizeof(day_text), "Today");
     }
@@ -142,8 +144,9 @@ const char *WEATHER_INFO(uint8_t day, uint8_t weather, int8_t temperature, int t
         snprintf(day_text, sizeof(day_text), "The %uth day", day);
     }
 
-    static char message[1024];
-    snprintf(message, sizeof(message), "%s's Weather is: %s;  Temp:%d",
+    size_t size = 1024;
+    char *message = malloc(size);
+    snprintf(message, size, "%s's Weather is: %s;  Temp:%d",
             day_text, weather_to_string(weather), temperature);
     return message;
 }
