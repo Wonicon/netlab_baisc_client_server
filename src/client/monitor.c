@@ -90,12 +90,12 @@ static int query_city_exists(int socket_fd, const char *city_name)
  */
 static void city_query_handler(Monitor *monitor_ptr)
 {
-    if (!strcmp(monitor_ptr->command, "c")) {
+    if (!strcmp(monitor_ptr->command, CMD_CLEAR)) {
         system("clear");
         puts(GREETING);
         monitor_ptr->state = QUERY_CITY;
     }
-    else if (!strcmp(monitor_ptr->command, "#")) {
+    else if (!strcmp(monitor_ptr->command, CMD_EXIT)) {
         monitor_ptr->state = EXIT;
     }
     else if (query_city_exists(monitor_ptr->client_socket, monitor_ptr->command) == 0) {
@@ -148,26 +148,26 @@ static void weather_query_handler(Monitor *monitor_ptr)
 {
     CityResponseHeader response = {};
 
-    if (!strcmp(monitor_ptr->command, "c")) {
+    if (!strcmp(monitor_ptr->command, CMD_CLEAR)) {
         system("clear");
         puts(CITY_HEADER);
         monitor_ptr->state = QUERY_WEATHER;
     }
-    else if (!strcmp(monitor_ptr->command, "r")) {
+    else if (!strcmp(monitor_ptr->command, CMD_RETURN)) {
         system("clear");
         puts(GREETING);
         monitor_ptr->state = QUERY_CITY;
     }
-    else if (!strcmp(monitor_ptr->command, "#")) {
+    else if (!strcmp(monitor_ptr->command, CMD_EXIT)) {
         monitor_ptr->state = EXIT;
     }
-    else if (!strcmp(monitor_ptr->command, "1")) {
+    else if (!strcmp(monitor_ptr->command, CMD_TODAY)) {
         request_helper(monitor_ptr->client_socket, REQUEST_SINGLE_DAY, monitor_ptr->city, 1, &response);
         puts_city_info(&response);
         puts_weather_info(&response, 0, 1);
         monitor_ptr->state = QUERY_WEATHER;
     }
-    else if (!strcmp(monitor_ptr->command, "2")) {
+    else if (!strcmp(monitor_ptr->command, CMD_THREE_DAY)) {
         request_helper(monitor_ptr->client_socket, REQUEST_MULTIPLE_DAY, monitor_ptr->city, 3, &response);
         puts_city_info(&response);
         for (int i = 0; i < response.n_status; i++) {
@@ -175,7 +175,7 @@ static void weather_query_handler(Monitor *monitor_ptr)
         }
         monitor_ptr->state = QUERY_WEATHER;
     }
-    else if (!strcmp(monitor_ptr->command, "3")) {
+    else if (!strcmp(monitor_ptr->command, CMD_CUSTOM_DAY)) {
         printf("%s", REQUEST_CUSTOM_DAY);
         int no;
         // 进行错误处理，如果不把输入缓冲区清空，则无法继续使用 scanf
@@ -189,8 +189,17 @@ static void weather_query_handler(Monitor *monitor_ptr)
         };
 
         request_helper(monitor_ptr->client_socket, REQUEST_SINGLE_DAY, monitor_ptr->city, (uint8_t)no, &response);
-        puts_city_info(&response);
-        puts_weather_info(&response, response.n_status, 1);
+
+        if (response.type == RESPONSE_NO_DAY) {
+            char *msg = NO_WEATHER(response.city_name);
+            puts(msg);
+            free(msg);
+        }
+        else {
+            puts_city_info(&response);
+            puts_weather_info(&response, response.n_status, 1);
+        }
+
         monitor_ptr->state = QUERY_WEATHER;
     }
     else {

@@ -28,9 +28,25 @@ extern const char *REQUEST_CUSTOM_DAY;
 
 extern const char *INPUT_ERROR;
 
+extern const char *CUSTOM_DAY_LIMIT;
+
+extern const char *CMD_EXIT;
+
+extern const char *CMD_RETURN;
+
+extern const char *CMD_CLEAR;
+
+extern const char *CMD_CUSTOM_DAY;
+
+extern const char *CMD_THREE_DAY;
+
+extern const char *CMD_TODAY;
+
 const char *NO_CITY_ERROR_MESSAGE(const char *city);
 
 char *CITY_INFO(const char *city, uint16_t year, uint8_t month, uint8_t day);
+
+char *NO_WEATHER(const char *city);
 
 char *WEATHER_INFO(uint8_t day, uint8_t weather, int8_t temperature, int today_enable);
 

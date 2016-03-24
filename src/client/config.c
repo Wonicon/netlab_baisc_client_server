@@ -9,6 +9,42 @@
 #include "lib/proxy.h"
 
 /**
+ * @brief 查询今天
+ */
+#define __CMD_TODAY "1"
+const char *CMD_TODAY = __CMD_TODAY;
+
+/**
+ * @brief 查询连续 3 天
+ */
+#define __CMD_THREE_DAY "2"
+const char *CMD_THREE_DAY = __CMD_THREE_DAY;
+
+/**
+ * @brief 查询自定义日期
+ */
+#define __CMD_CUSTOM_DAY "3"
+const char *CMD_CUSTOM_DAY = __CMD_CUSTOM_DAY;
+
+/**
+ * @brief 清屏
+ */
+#define __CMD_CLEAR "c"
+const char *CMD_CLEAR = __CMD_CLEAR;
+
+/**
+ * @brief 回退
+ */
+#define __CMD_RETURN "r"
+const char *CMD_RETURN = __CMD_RETURN;
+
+/**
+ * @brief 退出
+ */
+#define __CMD_EXIT "#"
+const char *CMD_EXIT = __CMD_EXIT;
+
+/**
  * @brief 服务器的 IP
  *
  * 这个 IP 地址可以使用通过抓包或者 strace 命令观察到
@@ -43,7 +79,7 @@ const char *MSG_SEND_FAILURE = "Failed to send request";
 const char *GREETING =
     "Welcome to NJUCS Weather Forecast Demo Program!\n"
     "Please input City Name in Chinese pinyin(e.g. nanjing or beijing)\n"
-    "(c)cls,(#)exit";
+    "(" __CMD_CLEAR ")cls,(" __CMD_EXIT ")exit";
 
 /**
  * @brief 第二屏信息
@@ -53,13 +89,15 @@ const char *CITY_HEADER =
     "1.today\n"
     "2.three days from today\n"
     "3.custom day by yourself\n"
-    "(r)back,(c)cls,(#)exit\n"
+    "(" __CMD_RETURN ")back,(" __CMD_CLEAR ")cls,(" __CMD_EXIT ")exit\n"
     "===================================================";
 
 /**
  * @brief 指定日期的提示信息，不换行！
  */
-const char *REQUEST_CUSTOM_DAY = "Please enter the day number(below 10, e.g. 1 means today):";
+#define __CUSTOM_DAY_LIMIT "10"
+const char *CUSTOM_DAY_LIMIT = __CUSTOM_DAY_LIMIT;
+const char *REQUEST_CUSTOM_DAY = "Please enter the day number(below " __CUSTOM_DAY_LIMIT ", e.g. 1 means today):";
 
 /**
  * @brief 输入错误的通用提示
@@ -124,6 +162,17 @@ static const char *weather_to_string(uint8_t weather_type)
     }
 
     return weather_type_literals[weather_type];
+}
+
+/**
+ * @brief 格式化没有天气信息的提示
+ */
+char *NO_WEATHER(const char *city)
+{
+    size_t size = 1024;
+    char *msg = malloc(size);
+    snprintf(msg, size, "Sorry, no given day's weather information for city %s!", city);
+    return msg;
 }
 
 /**
