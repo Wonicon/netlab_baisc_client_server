@@ -179,7 +179,7 @@ static void weather_query_handler(Monitor *monitor_ptr)
         printf("%s", REQUEST_CUSTOM_DAY);
         int no;
         // 进行错误处理，如果不把输入缓冲区清空，则无法继续使用 scanf
-        while (scanf("%d", &no) == 0 || no >= 10 || no <= 0) {
+        while (scanf("%d", &no) == 0 || no >= atoi(CUSTOM_DAY_LIMIT) || no <= 0) {
             puts(INPUT_ERROR);
             // 清空输入缓冲区
             do {
